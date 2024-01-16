@@ -27,6 +27,7 @@ api = Api(app)
 def home():
     return ''
 
+#Creates the route for returning all scientists, or posting a new scientist.
 class Scientists_Route(Resource):
     def get(self):
         all_scientists = Scientist.query.all()
@@ -50,6 +51,7 @@ class Scientists_Route(Resource):
 
 api.add_resource(Scientists_Route, '/scientists')
 
+#Creates the route for a single scientist via an ID, including a GET, PATCH, and DELETE request
 class Scientists_By_Id(Resource):
     def get(self, id):
         one_scientist = Scientist.query.filter(Scientist.id == id).first()
@@ -82,6 +84,7 @@ class Scientists_By_Id(Resource):
 
 api.add_resource(Scientists_By_Id, '/scientists/<int:id>')
 
+#Creates the route for all planets via a GET request
 class Planets_Route(Resource):
     def get(self):
         all_planets = Planet.query.all()
@@ -92,6 +95,7 @@ class Planets_Route(Resource):
 
 api.add_resource(Planets_Route, '/planets')
 
+#Creates a route for POSTing a new mission
 class Mission_Route(Resource):
     def post(self):
         try:
