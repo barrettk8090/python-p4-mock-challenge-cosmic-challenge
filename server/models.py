@@ -27,7 +27,11 @@ class Planet(db.Model, SerializerMixin):
 
     # Add relationship
 
+    missions = db.relationship("Mission", back_populates="planet", cascade="all, delete-orphan")
+
     # Add serialization rules
+
+    serialize_rules = ('-missions.planet',)
 
 
 class Scientist(db.Model, SerializerMixin):
@@ -39,11 +43,29 @@ class Scientist(db.Model, SerializerMixin):
 
     # Add relationship
 
+    missions = db.relationship("Mission", back_populates="scientist", cascade="all, delete-orphan")
+
     # Add serialization rules
+
+    serialize_rules = ('-missions.scientist',)
 
     # Add validation
 
+    @validates('name')
+    def validate_name(self, key, value):
+        if value:
+            return value
+        else:
+            raise ValueError('Not a valid name')
 
+    @validates('field_of_study')
+    def validate_fos(self, key, value):
+        if value:
+            return value
+        else:
+            raise ValueError('Not a valid field of study')
+
+##JOIN TABLE
 class Mission(db.Model, SerializerMixin):
     __tablename__ = 'missions'
 
@@ -52,9 +74,38 @@ class Mission(db.Model, SerializerMixin):
 
     # Add relationships
 
+    planet_id = db.Column(db.Integer, db.ForeignKey('planets.id'))
+    scientist_id = db.Column(db.Integer, db.ForeignKey('scientists.id'))
+
+    planet = db.relationship("Planet", back_populates="missions")
+    scientist = db.relationship("Scientist", back_populates="missions")
+
     # Add serialization rules
 
+    serialize_rules = ('-planet.missions', '-scientist.missions',)
+
     # Add validation
+
+    @validates('name')
+    def validate_name(self, key, value):
+        if value:
+            return value
+        else:
+            raise ValueError('Not a valid name')
+        
+    @validates('scientist_id')
+    def validate_scientistid(self, key, value):
+        if value:
+            return value
+        else:
+            raise ValueError('Not a valid name')
+        
+    @validates('planet_id')
+    def validate_planetid(self, key, value):
+        if value:
+            return value
+        else:
+            raise ValueError('Not a valid name')
 
 
 # add any models you may need.
